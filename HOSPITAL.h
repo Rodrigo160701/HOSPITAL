@@ -1,8 +1,12 @@
-﻿// HOSPITAL.h: archivo de inclusión para archivos de inclusión estándar del sistema,
-// o archivos de inclusión específicos de un proyecto.
+﻿#ifndef HOSPITAL_H
+#define HOSPITAL_H
 
-#pragma once
+#include "Paciente.h"
+#include "Medico.h"
+#include "Cita.h"
 
-#include <iostream>
+// Declaración de funciones globales para el main
+void mostrarMenuPrincipal();
+void manejarOpcion(int opcion, Paciente& paciente, Medico& medico, Cita& cita);
 
-// TODO: Haga referencia aquí a los encabezados adicionales que el programa requiere.
+#endif

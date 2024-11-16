@@ -8,20 +8,18 @@
 
 class Cita {
 private:
-    int id;
+    std::string id;
     std::string fecha;
     int urgencia;
-    Paciente* paciente;
-    Medico* medico;
+    Paciente paciente;
+    Medico medico;
 
 public:
-    Cita(int id, std::string fecha, int urgencia, Paciente* paciente, Medico* medico)
-        : id(id), fecha(fecha), urgencia(urgencia), paciente(paciente), medico(medico) {}
-
+    Cita();
     void asignarCita();
-    void modificarCita(std::string nuevaFecha, int nuevaUrgencia);
+    void buscarCita();
+    void modificarCita();
     void cancelarCita();
-    void mostrarDatos() const;
 };
 
 #endif

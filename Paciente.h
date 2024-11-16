@@ -13,13 +13,12 @@ private:
     std::string DNI;
 
 public:
-    Paciente(int id, std::string nombre, std::string fecha_ingreso, std::string historial_clinico, std::string DNI)
-        : id(id), nombre(nombre), fecha_ingreso(fecha_ingreso), historial_clinico(historial_clinico), DNI(DNI) {}
-
+    Paciente();
     void registrarPaciente();
-    void modificarPaciente(std::string nuevo_nombre, std::string nuevo_historial);
-    void agregarHistorialClinico(std::string nuevo_historial);
-    void mostrarDatos() const;
+    void buscarPaciente();
+    void modificarPaciente();
+    void eliminarPaciente();
+    void agregarHistorialClinico();
 };
 
 #endif

@@ -9,15 +9,15 @@ private:
     int id;
     std::string nombre;
     std::string especialidad;
+    std::string DNI;
     bool disponibilidad;
 
 public:
-    Medico(int id, std::string nombre, std::string especialidad, bool disponibilidad)
-        : id(id), nombre(nombre), especialidad(especialidad), disponibilidad(disponibilidad) {}
-
+    Medico();
     void registrarMedico();
-    void modificarMedico(std::string nueva_especialidad, bool nueva_disponibilidad);
-    void mostrarDatos() const;
+    void buscarMedico();
+    void modificarMedico(const std::string& nueva_especialidad, bool nueva_disponibilidad);
+    void eliminarMedico();
 };
 
 #endif
