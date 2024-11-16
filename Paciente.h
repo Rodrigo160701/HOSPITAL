@@ -14,11 +14,12 @@ private:
 
 public:
     Paciente();
-    void registrarPaciente();
-    void buscarPaciente();
-    void modificarPaciente();
-    void eliminarPaciente();
-    void agregarHistorialClinico();
+    void menuPaciente(); // Submenú de pacientes
+    void registrarPaciente(); // Registrar un paciente
+    void buscarPaciente();    // Buscar un paciente
+    void modificarPaciente(); // Modificar un paciente
+    void eliminarPaciente();  // Eliminar un paciente
+    void agregarHistorialClinico(); // Agregar historial clínico
 };
 
 #endif

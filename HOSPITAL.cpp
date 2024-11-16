@@ -16,13 +16,13 @@ void mostrarMenuPrincipal() {
 void manejarOpcion(int opcion, Paciente& paciente, Medico& medico, Cita& cita) {
     switch (opcion) {
     case 1:
-        paciente.registrarPaciente();
+        paciente.menuPaciente();
         break;
     case 2:
-        medico.registrarMedico();
+        medico.menuMedico();
         break;
     case 3:
-        cita.asignarCita();
+        cita.menuCita();
         break;
     case 4:
         std::cout << "Saliendo del sistema...\n";

@@ -14,10 +14,12 @@ private:
 
 public:
     Medico();
+    void menuMedico(); // Submenú de médicos
     void registrarMedico();
     void buscarMedico();
-    void modificarMedico(const std::string& nueva_especialidad, bool nueva_disponibilidad);
+    void modificarMedico();
     void eliminarMedico();
+    void generarReporte();
 };
 
 #endif

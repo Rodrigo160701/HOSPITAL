@@ -16,10 +16,12 @@ private:
 
 public:
     Cita();
+    void menuCita(); // Submenú de citas
     void asignarCita();
     void buscarCita();
     void modificarCita();
     void cancelarCita();
+    void generarReporte();
 };
 
 #endif
