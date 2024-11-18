@@ -1,27 +1,21 @@
 #ifndef CITA_H
 #define CITA_H
 
-#include <iostream>
 #include <string>
-#include "Paciente.h"
-#include "Medico.h"
 
 class Cita {
-private:
-    std::string id;
-    std::string fecha;
-    int urgencia;
-    Paciente paciente;
-    Medico medico;
-
 public:
-    Cita();
-    void menuCita(); // Submenú de citas
-    void asignarCita();
-    void buscarCita();
-    void modificarCita();
-    void cancelarCita();
-    void generarReporte();
+    static void inicializarArchivo();
+    static void asignar();
+    static void buscar();
+    static void modificar();
+    static void cancelar();
+    static void reportePorFecha();
+    static void reportePorUrgencia();
+private:
+    static int generarId(const std::string& archivo);
+    static bool validarDatos(const std::string& fecha, int urgencia, int pacienteId, int medicoId);
+    static std::string generarIdUnico(const std::string& pacienteNombre, int secuencia, int urgencia);
 };
 
 #endif

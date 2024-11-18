@@ -1,25 +1,18 @@
 #ifndef MEDICO_H
 #define MEDICO_H
 
-#include <iostream>
 #include <string>
 
 class Medico {
-private:
-    int id;
-    std::string nombre;
-    std::string especialidad;
-    std::string DNI;
-    bool disponibilidad;
-
 public:
-    Medico();
-    void menuMedico(); // Submenú de médicos
-    void registrarMedico();
-    void buscarMedico();
-    void modificarMedico();
-    void eliminarMedico();
-    void generarReporte();
+    static void inicializarArchivo();
+    static void registrar();
+    static void buscar();
+    static void modificar();
+    static void eliminar();
+private:
+    static int generarId(const std::string& archivo);
+    static bool validarDatos(const std::string& nombre, const std::string& especialidad, const std::string& dni);
 };
 
 #endif

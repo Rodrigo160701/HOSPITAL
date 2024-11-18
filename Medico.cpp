@@ -1,136 +1,96 @@
 #include "Medico.h"
-#include <regex>
-#include <limits>
-#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <sstream>
 
-// Constructor por defecto
-Medico::Medico() : id(0), nombre(""), especialidad(""), DNI(""), disponibilidad(false) {}
-
-// Menú de médicos
-void Medico::menuMedico() {
-    int opcion;
-    do {
-        std::cout << "\nMenú de Médicos:\n"
-            << "1. Registrar Médico\n"
-            << "2. Buscar Médico\n"
-            << "3. Generar Reporte\n"
-            << "4. Volver al menú principal\n"
-            << "Seleccione una opción: ";
-        std::cin >> opcion;
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-        switch (opcion) {
-        case 1:
-            registrarMedico();
-            break;
-        case 2:
-            buscarMedico();
-            break;
-        case 3:
-            generarReporte();
-            break;
-        case 4:
-            std::cout << "Volviendo al menú principal...\n";
-            break;
-        default:
-            std::cerr << "Opción inválida. Intente de nuevo.\n";
-        }
-    } while (opcion != 4);
+void Medico::inicializarArchivo() {
+    std::ofstream archivo("medicos.csv", std::ios::app);
+    if (archivo.tellp() == 0) {
+        archivo << "id,nombre,especialidad,dni\n";
+    }
+    archivo.close();
 }
 
-// Registrar médico
-void Medico::registrarMedico() {
-    std::cout << "Ingrese el nombre del médico: ";
-    std::getline(std::cin, nombre);
-
-    std::cout << "Ingrese la especialidad: ";
-    std::getline(std::cin, especialidad);
-
-    std::cout << "Ingrese el DNI: ";
-    std::getline(std::cin, DNI);
-
-    if (nombre.empty() || especialidad.empty() || DNI.empty()) {
-        std::cerr << "Datos inválidos. Intente de nuevo.\n";
+void Medico::registrar() {
+    std::ofstream archivo("medicos.csv", std::ios::app);
+    if (!archivo) {
+        std::cerr << "Error al abrir el archivo de médicos." << std::endl;
         return;
     }
 
-    id = rand() % 10000; // Generar un ID único
-    disponibilidad = true; // Por defecto, el médico está disponible
-    std::cout << "Médico registrado con ID: " << id << "\n";
+    std::string nombre, especialidad, dni;
+    std::cout << "Ingrese el nombre del médico: ";
+    std::getline(std::cin, nombre);
+    std::cout << "Ingrese la especialidad del médico: ";
+    std::getline(std::cin, especialidad);
+    std::cout << "Ingrese el DNI del médico: ";
+    std::getline(std::cin, dni);
+
+    if (!validarDatos(nombre, especialidad, dni)) {
+        std::cerr << "Datos inválidos. Intente nuevamente." << std::endl;
+        return;
+    }
+
+    int id = generarId("medicos.csv");
+    archivo << id << "," << nombre << "," << especialidad << "," << dni << "\n";
+    archivo.close();
+
+    std::cout << "Médico registrado correctamente con ID " << id << "." << std::endl;
 }
 
-// Buscar médico
-void Medico::buscarMedico() {
+void Medico::buscar() {
+    std::ifstream archivo("medicos.csv");
+    if (!archivo) {
+        std::cerr << "Error al abrir el archivo de médicos." << std::endl;
+        return;
+    }
+
     std::string criterio;
-    std::cout << "Ingrese el ID, Nombre, DNI o Especialidad para buscar: ";
+    std::cout << "Ingrese el DNI, nombre o especialidad del médico a buscar: ";
     std::getline(std::cin, criterio);
 
-    // Simulación: verificar si el criterio coincide con algo
-    if (criterio == "Cardiología") { // Simulación
-        std::cout << "Médico encontrado: Dr. García, Especialidad: Cardiología, DNI: 12345678X\n";
-        modificarMedico();
+    std::string linea;
+    bool encontrado = false;
+
+    while (std::getline(archivo, linea)) {
+        if (linea.find(criterio) != std::string::npos) {
+            std::cout << linea << std::endl;
+            encontrado = true;
+        }
     }
-    else {
-        std::cerr << "No se encontró ningún médico con el criterio proporcionado.\n";
+
+    if (!encontrado) {
+        std::cout << "No se encontraron médicos con el criterio dado." << std::endl;
     }
+
+    archivo.close();
 }
 
-// Modificar médico
-void Medico::modificarMedico() {
-    std::cout << "¿Desea modificar la especialidad del médico? (s/n): ";
-    char confirmacion;
-    std::cin >> confirmacion;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    if (confirmacion == 's' || confirmacion == 'S') {
-        std::cout << "Ingrese la nueva especialidad: ";
-        std::getline(std::cin, especialidad);
-    }
-
-    std::cout << "¿Desea cambiar la disponibilidad del médico? (s/n): ";
-    std::cin >> confirmacion;
-    if (confirmacion == 's' || confirmacion == 'S') {
-        disponibilidad = !disponibilidad;
-        std::cout << "Disponibilidad actualizada.\n";
-    }
-
-    std::cout << "Datos del médico modificados con éxito.\n";
+void Medico::modificar() {
+    std::cout << "Función modificar aún en desarrollo." << std::endl;
 }
 
-// Eliminar médico
-void Medico::eliminarMedico() {
-    std::cout << "Confirmar eliminación del médico (s/n): ";
-    char confirmacion;
-    std::cin >> confirmacion;
-    if (confirmacion == 's' || confirmacion == 'S') {
-        std::cout << "Médico eliminado con éxito.\n";
-    }
-    else {
-        std::cout << "Eliminación cancelada.\n";
-    }
+void Medico::eliminar() {
+    std::cout << "Función eliminar aún en desarrollo." << std::endl;
 }
 
-// Generar reportes
-void Medico::generarReporte() {
-    std::cout << "\nOpciones de reporte:\n"
-        << "1. Médicos disponibles\n"
-        << "2. Médicos por especialidad\n"
-        << "3. Médicos y sus pacientes\n"
-        << "Seleccione una opción: ";
-    int opcion;
-    std::cin >> opcion;
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+int Medico::generarId(const std::string& archivo) {
+    std::ifstream entrada(archivo);
+    std::string linea;
+    int ultimoId = 0;
 
-    switch (opcion) {
-    case 1:
-        std::cout << "Generando reporte de médicos disponibles...\n";
-        break;
-    case 2:
-        std::cout << "Generando reporte de médicos por especialidad...\n";
-        break;
-    case 3:
-        std::cout << "Generando reporte de médicos con sus pacientes...\n";
-        break;
-    default:
-        std::cerr << "Opción inválida.\n";
+    while (std::getline(entrada, linea)) {
+        std::stringstream ss(linea);
+        std::string id;
+        std::getline(ss, id, ',');
+        if (!id.empty() && id != "id") {
+            ultimoId = std::stoi(id);
+        }
     }
+
+    return ultimoId + 1;
+}
+
+bool Medico::validarDatos(const std::string& nombre, const std::string& especialidad, const std::string& dni) {
+    return !nombre.empty() && !especialidad.empty() && dni.size() == 9 && std::isdigit(dni[0]);
 }
