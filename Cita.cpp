@@ -19,13 +19,10 @@ void Cita::asignar() {
     }
 
     int pacienteId, medicoId, urgencia;
-    std::string fecha, pacienteNombre;
-
+    std::string fecha;
     std::cout << "Ingrese el ID del paciente: ";
     std::cin >> pacienteId;
     std::cin.ignore();
-    std::cout << "Ingrese el nombre del paciente: ";
-    std::getline(std::cin, pacienteNombre);
     std::cout << "Ingrese el ID del médico: ";
     std::cin >> medicoId;
     std::cin.ignore();
@@ -40,20 +37,18 @@ void Cita::asignar() {
         return;
     }
 
-    int idSecuencial = generarId("citas.csv");
-    std::string idCita = generarIdUnico(pacienteNombre, idSecuencial, urgencia);
-
-    archivo << idCita << "," << pacienteId << "," << medicoId << "," << fecha << "," << urgencia << "\n";
+    int id = generarId("citas.csv");
+    archivo << id << "," << pacienteId << "," << medicoId << "," << fecha << "," << urgencia << "\n";
     archivo.close();
 
-    std::cout << "Cita asignada correctamente con ID " << idCita << "." << std::endl;
+    std::cout << "Cita asignada correctamente con ID " << id << "." << std::endl;
 }
 
-void Cita::buscar() {
+int Cita::buscar() {
     std::ifstream archivo("citas.csv");
     if (!archivo) {
         std::cerr << "Error al abrir el archivo de citas." << std::endl;
-        return;
+        return -1;
     }
 
     std::string criterio;
@@ -62,11 +57,17 @@ void Cita::buscar() {
 
     std::string linea;
     bool encontrado = false;
+    int citaId = -1;
 
     while (std::getline(archivo, linea)) {
         if (linea.find(criterio) != std::string::npos) {
             std::cout << linea << std::endl;
+            std::stringstream ss(linea);
+            std::string idStr;
+            std::getline(ss, idStr, ',');
+            citaId = std::stoi(idStr);
             encontrado = true;
+            break;
         }
     }
 
@@ -75,9 +76,37 @@ void Cita::buscar() {
     }
 
     archivo.close();
+    return citaId;
 }
 
-void Cita::modificar() {
+void Cita::menuCitaSeleccionada(int citaId) {
+    int opcion;
+    do {
+        std::cout << "\n--- Menú Cita Seleccionada ---\n";
+        std::cout << "1. Modificar Cita\n";
+        std::cout << "2. Cancelar Cita\n";
+        std::cout << "0. Volver al Menú Cita\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> opcion;
+        std::cin.ignore();
+
+        switch (opcion) {
+        case 1:
+            modificar(citaId);
+            break;
+        case 2:
+            cancelar(citaId);
+            break;
+        case 0:
+            std::cout << "Volviendo al Menú Cita..." << std::endl;
+            break;
+        default:
+            std::cout << "Opción no válida. Intente nuevamente." << std::endl;
+        }
+    } while (opcion != 0);
+}
+
+void Cita::modificar(int citaId) {
     std::ifstream archivoEntrada("citas.csv");
     if (!archivoEntrada) {
         std::cerr << "Error al abrir el archivo de citas." << std::endl;
@@ -90,45 +119,30 @@ void Cita::modificar() {
         return;
     }
 
-    std::string idCita, nuevaFecha;
-    int nuevaUrgencia, nuevoMedicoId;
-    std::cout << "Ingrese el ID de la cita a modificar: ";
-    std::getline(std::cin, idCita);
-
     std::string linea;
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
         std::stringstream ss(linea);
-        std::string citaId, pacienteId, medicoId, fecha, urgenciaStr;
+        std::string idStr, pacienteId, medicoId, fecha, urgenciaStr;
+        std::getline(ss, idStr, ',');
 
-        std::getline(ss, citaId, ',');
-        std::getline(ss, pacienteId, ',');
-        std::getline(ss, medicoId, ',');
-        std::getline(ss, fecha, ',');
-        std::getline(ss, urgenciaStr, ',');
-
-        if (citaId == idCita) {
+        if (std::stoi(idStr) == citaId) {
             encontrado = true;
             std::cout << "Cita encontrada: " << linea << std::endl;
 
-            std::cout << "Ingrese la nueva fecha de la cita (YYYY-MM-DD): ";
+            std::cout << "Ingrese la nueva fecha de la cita (deje vacío para no modificar): ";
+            std::string nuevaFecha;
             std::getline(std::cin, nuevaFecha);
-            std::cout << "Ingrese el nuevo nivel de urgencia (1-5): ";
-            std::cin >> nuevaUrgencia;
-            std::cin.ignore();
-            std::cout << "Ingrese el nuevo ID del médico: ";
-            std::cin >> nuevoMedicoId;
-            std::cin.ignore();
+            if (!nuevaFecha.empty()) fecha = nuevaFecha;
 
-            if (!validarDatos(nuevaFecha, nuevaUrgencia, std::stoi(pacienteId), nuevoMedicoId)) {
-                std::cerr << "Datos inválidos. No se realizó la modificación." << std::endl;
-                archivoTemporal << linea << "\n";
-            }
-            else {
-                archivoTemporal << citaId << "," << pacienteId << "," << nuevoMedicoId << "," << nuevaFecha << "," << nuevaUrgencia << "\n";
-                std::cout << "Cita modificada correctamente." << std::endl;
-            }
+            std::cout << "Ingrese el nuevo nivel de urgencia (deje vacío para no modificar): ";
+            std::string nuevaUrgenciaStr;
+            std::getline(std::cin, nuevaUrgenciaStr);
+            if (!nuevaUrgenciaStr.empty()) urgenciaStr = nuevaUrgenciaStr;
+
+            archivoTemporal << idStr << "," << pacienteId << "," << medicoId << "," << fecha << "," << urgenciaStr << "\n";
+            std::cout << "Cita modificada correctamente." << std::endl;
         }
         else {
             archivoTemporal << linea << "\n";
@@ -145,7 +159,7 @@ void Cita::modificar() {
     std::rename("citas_temp.csv", "citas.csv");
 }
 
-void Cita::cancelar() {
+void Cita::cancelar(int citaId) {
     std::ifstream archivoEntrada("citas.csv");
     if (!archivoEntrada) {
         std::cerr << "Error al abrir el archivo de citas." << std::endl;
@@ -158,19 +172,15 @@ void Cita::cancelar() {
         return;
     }
 
-    std::string idCita;
-    std::cout << "Ingrese el ID de la cita a cancelar: ";
-    std::getline(std::cin, idCita);
-
     std::string linea;
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
         std::stringstream ss(linea);
-        std::string citaId;
-        std::getline(ss, citaId, ',');
+        std::string idStr;
+        std::getline(ss, idStr, ',');
 
-        if (citaId == idCita) {
+        if (std::stoi(idStr) == citaId) {
             encontrado = true;
             std::cout << "Cita cancelada: " << linea << std::endl;
         }
@@ -189,14 +199,6 @@ void Cita::cancelar() {
     std::rename("citas_temp.csv", "citas.csv");
 }
 
-void Cita::reportePorFecha() {
-    std::cout << "Función de reporte por fecha aún en desarrollo." << std::endl;
-}
-
-void Cita::reportePorUrgencia() {
-    std::cout << "Función de reporte por urgencia aún en desarrollo." << std::endl;
-}
-
 int Cita::generarId(const std::string& archivo) {
     std::ifstream entrada(archivo);
     std::string linea;
@@ -207,7 +209,7 @@ int Cita::generarId(const std::string& archivo) {
         std::string id;
         std::getline(ss, id, ',');
         if (!id.empty() && id != "id_cita") {
-            ultimoId++;
+            ultimoId = std::stoi(id);
         }
     }
 
@@ -215,18 +217,5 @@ int Cita::generarId(const std::string& archivo) {
 }
 
 bool Cita::validarDatos(const std::string& fecha, int urgencia, int pacienteId, int medicoId) {
-    if (fecha.size() != 10 || fecha[4] != '-' || fecha[7] != '-' || urgencia < 1 || urgencia > 5 || pacienteId <= 0 || medicoId <= 0) {
-        return false;
-    }
-    return true;
-}
-
-std::string Cita::generarIdUnico(const std::string& pacienteNombre, int secuencia, int urgencia) {
-    std::string iniciales;
-    for (const char& c : pacienteNombre) {
-        if (std::isupper(c)) {
-            iniciales += c;
-        }
-    }
-    return iniciales + std::to_string(secuencia) + std::to_string(urgencia);
+    return !fecha.empty() && urgencia >= 1 && urgencia <= 5 && pacienteId > 0 && medicoId > 0;
 }

@@ -7,9 +7,12 @@ class Paciente {
 public:
     static void inicializarArchivo();
     static void registrar();
-    static void buscar();
-    static void modificar();
-    static void eliminar();
+    static int buscar();
+    static void menuPacienteSeleccionado(int pacienteId);
+    static void modificar(int pacienteId);
+    static void eliminar(int pacienteId);
+    static void agregarHistorial(int pacienteId);
+
 private:
     static int generarId(const std::string& archivo);
     static bool validarDatos(const std::string& nombre, const std::string& dni, const std::string& fechaIngreso);

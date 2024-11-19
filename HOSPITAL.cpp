@@ -1,4 +1,4 @@
-﻿#include "Hospital.h"
+﻿#include "HOSPITAL.h"
 #include <iostream>
 
 void menuPaciente() {
@@ -7,8 +7,6 @@ void menuPaciente() {
         std::cout << "\n--- Menú Paciente ---\n";
         std::cout << "1. Registrar Paciente\n";
         std::cout << "2. Buscar Paciente\n";
-        std::cout << "3. Modificar Paciente\n";
-        std::cout << "4. Eliminar Paciente\n";
         std::cout << "0. Volver al Menú Principal\n";
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
@@ -18,15 +16,13 @@ void menuPaciente() {
         case 1:
             Paciente::registrar();
             break;
-        case 2:
-            Paciente::buscar();
+        case 2: {
+            int pacienteId = Paciente::buscar();
+            if (pacienteId != -1) {
+                Paciente::menuPacienteSeleccionado(pacienteId);
+            }
             break;
-        case 3:
-            Paciente::modificar();
-            break;
-        case 4:
-            Paciente::eliminar();
-            break;
+        }
         case 0:
             std::cout << "Volviendo al Menú Principal..." << std::endl;
             break;
@@ -42,8 +38,6 @@ void menuMedico() {
         std::cout << "\n--- Menú Médico ---\n";
         std::cout << "1. Registrar Médico\n";
         std::cout << "2. Buscar Médico\n";
-        std::cout << "3. Modificar Médico\n";
-        std::cout << "4. Eliminar Médico\n";
         std::cout << "0. Volver al Menú Principal\n";
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
@@ -53,15 +47,13 @@ void menuMedico() {
         case 1:
             Medico::registrar();
             break;
-        case 2:
-            Medico::buscar();
+        case 2: {
+            int medicoId = Medico::buscar();
+            if (medicoId != -1) {
+                Medico::menuMedicoSeleccionado(medicoId);
+            }
             break;
-        case 3:
-            Medico::modificar();
-            break;
-        case 4:
-            Medico::eliminar();
-            break;
+        }
         case 0:
             std::cout << "Volviendo al Menú Principal..." << std::endl;
             break;
@@ -77,8 +69,6 @@ void menuCita() {
         std::cout << "\n--- Menú Cita ---\n";
         std::cout << "1. Asignar Cita\n";
         std::cout << "2. Buscar Cita\n";
-        std::cout << "3. Modificar Cita\n";
-        std::cout << "4. Cancelar Cita\n";
         std::cout << "0. Volver al Menú Principal\n";
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
@@ -88,15 +78,13 @@ void menuCita() {
         case 1:
             Cita::asignar();
             break;
-        case 2:
-            Cita::buscar();
+        case 2: {
+            int citaId = Cita::buscar();
+            if (citaId != -1) {
+                Cita::menuCitaSeleccionada(citaId);
+            }
             break;
-        case 3:
-            Cita::modificar();
-            break;
-        case 4:
-            Cita::cancelar();
-            break;
+        }
         case 0:
             std::cout << "Volviendo al Menú Principal..." << std::endl;
             break;
