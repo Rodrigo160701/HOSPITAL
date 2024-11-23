@@ -32,7 +32,7 @@ void Paciente::registrar() {
     }
 
     int id = generarId("pacientes.csv");
-    archivo << id << "," << nombre << "," << dni << "," << fechaIngreso << ",\n"; // Historial vacío al inicio
+    archivo << id << "," << nombre << "," << dni << "," << fechaIngreso << ",\n"; // Historial vacío
     archivo.close();
 
     std::cout << "Paciente registrado correctamente con ID " << id << "." << std::endl;
@@ -171,8 +171,18 @@ void Paciente::modificar(int pacienteId) {
 
     archivoEntrada.close();
     archivoTemporal.close();
-    std::remove("pacientes.csv");
-    std::rename("pacientes_temp.csv", "pacientes.csv");
+
+    // Verificar si el archivo destino ya existe y eliminarlo
+    if (std::remove("pacientes.csv") == 0) {
+        std::cout << "Archivo original eliminado correctamente." << std::endl;
+    }
+    else {
+        std::cerr << "Advertencia: No se pudo eliminar el archivo original (puede que no exista)." << std::endl;
+    }
+
+    if (std::rename("pacientes_temp.csv", "pacientes.csv") != 0) {
+        perror("Error al renombrar el archivo temporal");
+    }
 }
 
 void Paciente::eliminar(int pacienteId) {
@@ -216,8 +226,18 @@ void Paciente::eliminar(int pacienteId) {
 
     archivoEntrada.close();
     archivoTemporal.close();
-    std::remove("pacientes.csv");
-    std::rename("pacientes_temp.csv", "pacientes.csv");
+
+    // Verificar si el archivo destino ya existe y eliminarlo
+    if (std::remove("pacientes.csv") == 0) {
+        std::cout << "Archivo original eliminado correctamente." << std::endl;
+    }
+    else {
+        std::cerr << "Advertencia: No se pudo eliminar el archivo original (puede que no exista)." << std::endl;
+    }
+
+    if (std::rename("pacientes_temp.csv", "pacientes.csv") != 0) {
+        perror("Error al renombrar el archivo temporal");
+    }
 }
 
 void Paciente::agregarHistorialClinico(int pacienteId) {
@@ -273,8 +293,18 @@ void Paciente::agregarHistorialClinico(int pacienteId) {
 
     archivoEntrada.close();
     archivoTemporal.close();
-    std::remove("pacientes.csv");
-    std::rename("pacientes_temp.csv", "pacientes.csv");
+
+    // Verificar si el archivo destino ya existe y eliminarlo
+    if (std::remove("pacientes.csv") == 0) {
+        std::cout << "Archivo original eliminado correctamente." << std::endl;
+    }
+    else {
+        std::cerr << "Advertencia: No se pudo eliminar el archivo original (puede que no exista)." << std::endl;
+    }
+
+    if (std::rename("pacientes_temp.csv", "pacientes.csv") != 0) {
+        perror("Error al renombrar el archivo temporal");
+    }
 }
 
 int Paciente::generarId(const std::string& archivo) {
