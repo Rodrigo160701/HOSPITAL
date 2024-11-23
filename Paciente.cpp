@@ -6,7 +6,7 @@
 void Paciente::inicializarArchivo() {
     std::ofstream archivo("pacientes.csv", std::ios::app);
     if (archivo.tellp() == 0) {
-        archivo << "id,nombre,dni,fecha_ingreso,historial_clinico\n";
+        archivo << "id,nombre,dni,fecha_ingreso,historial_clinico\n"; // Cabecera del archivo
     }
     archivo.close();
 }
@@ -23,7 +23,7 @@ void Paciente::registrar() {
     std::getline(std::cin, nombre);
     std::cout << "Ingrese el DNI del paciente: ";
     std::getline(std::cin, dni);
-    std::cout << "Ingrese la fecha de ingreso (YYYY-MM-DD): ";
+    std::cout << "Ingrese la fecha de ingreso del paciente (YYYY-MM-DD): ";
     std::getline(std::cin, fechaIngreso);
 
     if (!validarDatos(nombre, dni, fechaIngreso)) {
@@ -32,7 +32,7 @@ void Paciente::registrar() {
     }
 
     int id = generarId("pacientes.csv");
-    archivo << id << "," << nombre << "," << dni << "," << fechaIngreso << ",\"\"\n";
+    archivo << id << "," << nombre << "," << dni << "," << fechaIngreso << ",\n"; // Historial vacío al inicio
     archivo.close();
 
     std::cout << "Paciente registrado correctamente con ID " << id << "." << std::endl;
@@ -46,7 +46,7 @@ int Paciente::buscar() {
     }
 
     std::string criterio;
-    std::cout << "Ingrese el DNI o nombre del paciente a buscar: ";
+    std::cout << "Ingrese el DNI, nombre o fecha de ingreso del paciente a buscar: ";
     std::getline(std::cin, criterio);
 
     std::string linea;
@@ -54,12 +54,16 @@ int Paciente::buscar() {
     int pacienteId = -1;
 
     while (std::getline(archivo, linea)) {
+        if (linea.empty() || linea.find("id") == 0) {
+            continue; // Ignora líneas vacías o la cabecera
+        }
+
         if (linea.find(criterio) != std::string::npos) {
             std::cout << linea << std::endl;
             std::stringstream ss(linea);
             std::string idStr;
             std::getline(ss, idStr, ',');
-            pacienteId = std::stoi(idStr);
+            pacienteId = std::stoi(idStr); // Conversión segura porque ya validamos
             encontrado = true;
             break;
         }
@@ -93,7 +97,7 @@ void Paciente::menuPacienteSeleccionado(int pacienteId) {
             eliminar(pacienteId);
             break;
         case 3:
-            agregarHistorial(pacienteId);
+            agregarHistorialClinico(pacienteId);
             break;
         case 0:
             std::cout << "Volviendo al Menú Paciente..." << std::endl;
@@ -121,9 +125,18 @@ void Paciente::modificar(int pacienteId) {
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
+        if (linea.empty() || linea.find("id") == 0) {
+            archivoTemporal << linea << "\n"; // Copia la cabecera
+            continue;
+        }
+
         std::stringstream ss(linea);
         std::string idStr, nombre, dni, fechaIngreso, historial;
         std::getline(ss, idStr, ',');
+        std::getline(ss, nombre, ',');
+        std::getline(ss, dni, ',');
+        std::getline(ss, fechaIngreso, ',');
+        std::getline(ss, historial);
 
         if (std::stoi(idStr) == pacienteId) {
             encontrado = true;
@@ -134,12 +147,12 @@ void Paciente::modificar(int pacienteId) {
             std::getline(std::cin, nuevoNombre);
             if (!nuevoNombre.empty()) nombre = nuevoNombre;
 
-            std::cout << "Ingrese el nuevo DNI (deje vacío para no modificar): ";
+            std::cout << "Ingrese el nuevo DNI del paciente (deje vacío para no modificar): ";
             std::string nuevoDni;
             std::getline(std::cin, nuevoDni);
             if (!nuevoDni.empty()) dni = nuevoDni;
 
-            std::cout << "Ingrese la nueva fecha de ingreso (deje vacío para no modificar): ";
+            std::cout << "Ingrese la nueva fecha de ingreso del paciente (deje vacío para no modificar): ";
             std::string nuevaFechaIngreso;
             std::getline(std::cin, nuevaFechaIngreso);
             if (!nuevaFechaIngreso.empty()) fechaIngreso = nuevaFechaIngreso;
@@ -179,6 +192,11 @@ void Paciente::eliminar(int pacienteId) {
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
+        if (linea.empty() || linea.find("id") == 0) {
+            archivoTemporal << linea << "\n"; // Copia la cabecera
+            continue;
+        }
+
         std::stringstream ss(linea);
         std::string idStr;
         std::getline(ss, idStr, ',');
@@ -202,7 +220,7 @@ void Paciente::eliminar(int pacienteId) {
     std::rename("pacientes_temp.csv", "pacientes.csv");
 }
 
-void Paciente::agregarHistorial(int pacienteId) {
+void Paciente::agregarHistorialClinico(int pacienteId) {
     std::ifstream archivoEntrada("pacientes.csv");
     if (!archivoEntrada) {
         std::cerr << "Error al abrir el archivo de pacientes." << std::endl;
@@ -219,20 +237,28 @@ void Paciente::agregarHistorial(int pacienteId) {
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
+        if (linea.empty() || linea.find("id") == 0) {
+            archivoTemporal << linea << "\n"; // Copia la cabecera
+            continue;
+        }
+
         std::stringstream ss(linea);
         std::string idStr, nombre, dni, fechaIngreso, historial;
         std::getline(ss, idStr, ',');
         std::getline(ss, nombre, ',');
         std::getline(ss, dni, ',');
         std::getline(ss, fechaIngreso, ',');
-        std::getline(ss, historial, ',');
+        std::getline(ss, historial);
 
         if (std::stoi(idStr) == pacienteId) {
             encontrado = true;
-            std::cout << "Ingrese el historial clínico para agregar: ";
+            std::cout << "Paciente encontrado: " << linea << std::endl;
+
+            std::cout << "Ingrese el historial clínico a agregar: ";
             std::string nuevoHistorial;
             std::getline(std::cin, nuevoHistorial);
-            historial += " " + nuevoHistorial;
+            historial += " | " + nuevoHistorial;
+
             archivoTemporal << idStr << "," << nombre << "," << dni << "," << fechaIngreso << "," << historial << "\n";
             std::cout << "Historial clínico agregado correctamente." << std::endl;
         }
@@ -257,10 +283,12 @@ int Paciente::generarId(const std::string& archivo) {
     int ultimoId = 0;
 
     while (std::getline(entrada, linea)) {
+        if (linea.empty() || linea.find("id") == 0) continue; // Ignora líneas vacías o la cabecera
+
         std::stringstream ss(linea);
         std::string id;
         std::getline(ss, id, ',');
-        if (!id.empty() && id != "id") {
+        if (!id.empty()) {
             ultimoId = std::stoi(id);
         }
     }
@@ -269,5 +297,5 @@ int Paciente::generarId(const std::string& archivo) {
 }
 
 bool Paciente::validarDatos(const std::string& nombre, const std::string& dni, const std::string& fechaIngreso) {
-    return !nombre.empty() && dni.size() == 9 && !fechaIngreso.empty();
+    return !nombre.empty() && dni.size() == 9 && fechaIngreso.size() == 10;
 }

@@ -11,7 +11,7 @@ public:
     static void menuPacienteSeleccionado(int pacienteId);
     static void modificar(int pacienteId);
     static void eliminar(int pacienteId);
-    static void agregarHistorial(int pacienteId);
+    static void agregarHistorialClinico(int pacienteId);
 
 private:
     static int generarId(const std::string& archivo);

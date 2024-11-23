@@ -6,7 +6,7 @@
 void Medico::inicializarArchivo() {
     std::ofstream archivo("medicos.csv", std::ios::app);
     if (archivo.tellp() == 0) {
-        archivo << "id,nombre,especialidad,dni\n"; // Cabeceras si el archivo está vacío
+        archivo << "id,nombre,especialidad,dni\n"; // Cabecera del archivo
     }
     archivo.close();
 }
@@ -54,12 +54,16 @@ int Medico::buscar() {
     int medicoId = -1;
 
     while (std::getline(archivo, linea)) {
+        if (linea.empty() || linea.find("id") == 0) {
+            continue; // Ignora líneas vacías o la cabecera
+        }
+
         if (linea.find(criterio) != std::string::npos) {
             std::cout << linea << std::endl;
             std::stringstream ss(linea);
             std::string idStr;
             std::getline(ss, idStr, ',');
-            medicoId = std::stoi(idStr);
+            medicoId = std::stoi(idStr); // Conversión segura porque ya validamos
             encontrado = true;
             break;
         }
@@ -117,6 +121,11 @@ void Medico::modificar(int medicoId) {
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
+        if (linea.empty() || linea.find("id") == 0) {
+            archivoTemporal << linea << "\n"; // Copia la cabecera
+            continue;
+        }
+
         std::stringstream ss(linea);
         std::string idStr, nombre, especialidad, dni;
         std::getline(ss, idStr, ',');
@@ -175,6 +184,11 @@ void Medico::eliminar(int medicoId) {
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
+        if (linea.empty() || linea.find("id") == 0) {
+            archivoTemporal << linea << "\n"; // Copia la cabecera
+            continue;
+        }
+
         std::stringstream ss(linea);
         std::string idStr;
         std::getline(ss, idStr, ',');
@@ -204,10 +218,12 @@ int Medico::generarId(const std::string& archivo) {
     int ultimoId = 0;
 
     while (std::getline(entrada, linea)) {
+        if (linea.empty() || linea.find("id") == 0) continue; // Ignora líneas vacías o la cabecera
+
         std::stringstream ss(linea);
         std::string id;
         std::getline(ss, id, ',');
-        if (!id.empty() && id != "id") {
+        if (!id.empty()) {
             ultimoId = std::stoi(id);
         }
     }
