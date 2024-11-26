@@ -7,14 +7,16 @@ class Cita {
 public:
     static void inicializarArchivo();
     static void asignar();
-    static void buscar();
-    static void modificar(const std::string& citaId);
-    static void reportePorFecha(const std::string& fechaInicio, const std::string& fechaFin);
-    static void reportePorUrgencia(int nivelUrgencia);
+    static int buscar();
+    static void menuCitaSeleccionada(int citaId);
+    static void modificar(int citaId);
+    static void cancelar(int citaId);
+    static void reportePorFecha();
+    static void reportePorUrgencia();
 
 private:
-    static std::string generarCitaId(int secuencial, int urgencia);
     static int generarId(const std::string& archivo);
+    static bool validarDatos(const std::string& fecha, int urgencia, int pacienteId, int medicoId);
 };
 
 #endif
