@@ -39,7 +39,7 @@ void Paciente::registrar() {
     }
 
     int id = generarId("pacientes.csv");
-    archivo << id << "," << nombre << "," << dni << "," << fechaIngreso << ",\n"; // Historial vacío
+    archivo << id << "," << nombre << "," << dni << "," << fechaIngreso << ",\n"; 
     archivo.close();
 
     std::cout << "Paciente registrado correctamente con ID " << id << "." << std::endl;

@@ -123,9 +123,18 @@ void Cita::modificar(int citaId) {
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
+        if (linea.empty() || linea.find("id_cita") == 0) {
+            archivoTemporal << linea << "\n"; // Copia la cabecera
+            continue;
+        }
+
         std::stringstream ss(linea);
         std::string idStr, pacienteId, medicoId, fecha, urgenciaStr;
         std::getline(ss, idStr, ',');
+        std::getline(ss, pacienteId, ',');
+        std::getline(ss, medicoId, ',');
+        std::getline(ss, fecha, ',');
+        std::getline(ss, urgenciaStr);
 
         if (std::stoi(idStr) == citaId) {
             encontrado = true;
@@ -155,8 +164,18 @@ void Cita::modificar(int citaId) {
 
     archivoEntrada.close();
     archivoTemporal.close();
-    std::remove("citas.csv");
-    std::rename("citas_temp.csv", "citas.csv");
+
+    // Verificar si el archivo destino ya existe y eliminarlo
+    if (std::remove("citas.csv") == 0) {
+        std::cout << "Archivo original eliminado correctamente." << std::endl;
+    }
+    else {
+        std::cerr << "Advertencia: No se pudo eliminar el archivo original (puede que no exista)." << std::endl;
+    }
+
+    if (std::rename("citas_temp.csv", "citas.csv") != 0) {
+        perror("Error al renombrar el archivo temporal");
+    }
 }
 
 void Cita::cancelar(int citaId) {
@@ -176,6 +195,11 @@ void Cita::cancelar(int citaId) {
     bool encontrado = false;
 
     while (std::getline(archivoEntrada, linea)) {
+        if (linea.empty() || linea.find("id_cita") == 0) {
+            archivoTemporal << linea << "\n"; // Copia la cabecera
+            continue;
+        }
+
         std::stringstream ss(linea);
         std::string idStr;
         std::getline(ss, idStr, ',');
@@ -195,8 +219,18 @@ void Cita::cancelar(int citaId) {
 
     archivoEntrada.close();
     archivoTemporal.close();
-    std::remove("citas.csv");
-    std::rename("citas_temp.csv", "citas.csv");
+
+    // Verificar si el archivo destino ya existe y eliminarlo
+    if (std::remove("citas.csv") == 0) {
+        std::cout << "Archivo original eliminado correctamente." << std::endl;
+    }
+    else {
+        std::cerr << "Advertencia: No se pudo eliminar el archivo original (puede que no exista)." << std::endl;
+    }
+
+    if (std::rename("citas_temp.csv", "citas.csv") != 0) {
+        perror("Error al renombrar el archivo temporal");
+    }
 }
 
 int Cita::generarId(const std::string& archivo) {
