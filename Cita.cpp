@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <regex>
 
 void Cita::inicializarArchivo() {
     std::ofstream archivo("citas.csv", std::ios::app);
@@ -9,6 +10,33 @@ void Cita::inicializarArchivo() {
         archivo << "id_cita,paciente_id,medico_id,fecha,urgencia\n";
     }
     archivo.close();
+}
+
+bool Cita::validarFecha(const std::string& fecha) {
+    std::regex formatoFecha("\\d{4}-\\d{2}-\\d{2}");
+    if (!std::regex_match(fecha, formatoFecha)) {
+        return false;
+    }
+
+    std::istringstream ss(fecha);
+    int anio, mes, dia;
+    char separador1, separador2;
+    ss >> anio >> separador1 >> mes >> separador2 >> dia;
+
+    if (separador1 != '-' || separador2 != '-' || mes < 1 || mes > 12 || dia < 1 || dia > 31) {
+        return false;
+    }
+
+    if (mes == 2) {
+        bool esBisiesto = (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+        return dia <= (esBisiesto ? 29 : 28);
+    }
+
+    if (mes == 4 || mes == 6 || mes == 9 || mes == 11) {
+        return dia <= 30;
+    }
+
+    return true;
 }
 
 void Cita::asignar() {
@@ -26,8 +54,15 @@ void Cita::asignar() {
     std::cout << "Ingrese el ID del médico: ";
     std::cin >> medicoId;
     std::cin.ignore();
-    std::cout << "Ingrese la fecha de la cita (YYYY-MM-DD): ";
-    std::getline(std::cin, fecha);
+
+    do {
+        std::cout << "Ingrese la fecha de la cita (YYYY-MM-DD): ";
+        std::getline(std::cin, fecha);
+        if (!validarFecha(fecha)) {
+            std::cerr << "Fecha inválida. Intente nuevamente." << std::endl;
+        }
+    } while (!validarFecha(fecha));
+
     std::cout << "Ingrese el nivel de urgencia (1-5): ";
     std::cin >> urgencia;
     std::cin.ignore();
@@ -140,9 +175,15 @@ void Cita::modificar(int citaId) {
             encontrado = true;
             std::cout << "Cita encontrada: " << linea << std::endl;
 
-            std::cout << "Ingrese la nueva fecha de la cita (deje vacío para no modificar): ";
             std::string nuevaFecha;
-            std::getline(std::cin, nuevaFecha);
+            do {
+                std::cout << "Ingrese la nueva fecha de la cita (deje vacío para no modificar): ";
+                std::getline(std::cin, nuevaFecha);
+                if (!nuevaFecha.empty() && !validarFecha(nuevaFecha)) {
+                    std::cerr << "Fecha inválida. Intente nuevamente." << std::endl;
+                    nuevaFecha.clear();
+                }
+            } while (!nuevaFecha.empty() && !validarFecha(nuevaFecha));
             if (!nuevaFecha.empty()) fecha = nuevaFecha;
 
             std::cout << "Ingrese el nuevo nivel de urgencia (deje vacío para no modificar): ";
@@ -251,5 +292,5 @@ int Cita::generarId(const std::string& archivo) {
 }
 
 bool Cita::validarDatos(const std::string& fecha, int urgencia, int pacienteId, int medicoId) {
-    return !fecha.empty() && urgencia >= 1 && urgencia <= 5 && pacienteId > 0 && medicoId > 0;
+    return validarFecha(fecha) && urgencia >= 1 && urgencia <= 5 && pacienteId > 0 && medicoId > 0;
 }

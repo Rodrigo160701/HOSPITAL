@@ -11,11 +11,10 @@ public:
     static void menuCitaSeleccionada(int citaId);
     static void modificar(int citaId);
     static void cancelar(int citaId);
-    static void reportePorFecha();
-    static void reportePorUrgencia();
 
 private:
     static int generarId(const std::string& archivo);
+    static bool validarFecha(const std::string& fecha); 
     static bool validarDatos(const std::string& fecha, int urgencia, int pacienteId, int medicoId);
 };
 
