@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <regex>
 
 void Paciente::inicializarArchivo() {
     std::ofstream archivo("pacientes.csv", std::ios::app);
@@ -23,8 +24,14 @@ void Paciente::registrar() {
     std::getline(std::cin, nombre);
     std::cout << "Ingrese el DNI del paciente: ";
     std::getline(std::cin, dni);
-    std::cout << "Ingrese la fecha de ingreso del paciente (YYYY-MM-DD): ";
-    std::getline(std::cin, fechaIngreso);
+
+    do {
+        std::cout << "Ingrese la fecha de ingreso del paciente (YYYY-MM-DD): ";
+        std::getline(std::cin, fechaIngreso);
+        if (!validarFecha(fechaIngreso)) {
+            std::cerr << "Fecha inválida. Asegúrese de usar el formato YYYY-MM-DD y que sea una fecha válida." << std::endl;
+        }
+    } while (!validarFecha(fechaIngreso));
 
     if (!validarDatos(nombre, dni, fechaIngreso)) {
         std::cerr << "Datos inválidos. Intente nuevamente." << std::endl;
@@ -155,7 +162,8 @@ void Paciente::modificar(int pacienteId) {
             std::cout << "Ingrese la nueva fecha de ingreso del paciente (deje vacío para no modificar): ";
             std::string nuevaFechaIngreso;
             std::getline(std::cin, nuevaFechaIngreso);
-            if (!nuevaFechaIngreso.empty()) fechaIngreso = nuevaFechaIngreso;
+            if (!nuevaFechaIngreso.empty() && validarFecha(nuevaFechaIngreso)) fechaIngreso = nuevaFechaIngreso;
+            else if (!nuevaFechaIngreso.empty()) std::cerr << "Fecha inválida. No se modificó la fecha." << std::endl;
 
             archivoTemporal << idStr << "," << nombre << "," << dni << "," << fechaIngreso << "," << historial << "\n";
             std::cout << "Paciente modificado correctamente." << std::endl;
@@ -327,5 +335,31 @@ int Paciente::generarId(const std::string& archivo) {
 }
 
 bool Paciente::validarDatos(const std::string& nombre, const std::string& dni, const std::string& fechaIngreso) {
-    return !nombre.empty() && dni.size() == 9 && fechaIngreso.size() == 10;
+    return !nombre.empty() && dni.size() == 9 && validarFecha(fechaIngreso);
+}
+
+bool Paciente::validarFecha(const std::string& fecha) {
+    std::regex formatoFecha("^(\\d{4})-(\\d{2})-(\\d{2})$");
+    std::smatch coincidencia;
+
+    if (!std::regex_match(fecha, coincidencia, formatoFecha)) {
+        return false;
+    }
+
+    int anio = std::stoi(coincidencia[1].str());
+    int mes = std::stoi(coincidencia[2].str());
+    int dia = std::stoi(coincidencia[3].str());
+
+    if (mes < 1 || mes > 12) {
+        return false;
+    }
+
+    int diasPorMes[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+    // Comprobar años bisiestos
+    if (mes == 2 && ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))) {
+        diasPorMes[1] = 29;
+    }
+
+    return dia >= 1 && dia <= diasPorMes[mes - 1];
 }
