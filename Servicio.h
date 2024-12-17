@@ -1,22 +1,24 @@
 #ifndef SERVICIO_H
 #define SERVICIO_H
 
-#include <iostream>
 #include <string>
 
 class Servicio {
-private:
-    int id;
-    std::string nombre_servicio;
-    std::string descripcion;
-
 public:
-    Servicio(int id, std::string nombre_servicio, std::string descripcion)
-        : id(id), nombre_servicio(nombre_servicio), descripcion(descripcion) {}
+    static void inicializarArchivo();
+    static void registrar();
+    static int buscar();
+    static void menuServicioSeleccionado(int servicioId);
+    static void modificar(int servicioId);
+    static void eliminar(int servicioId);
 
-    void agregarServicio();
-    void modificarServicio(std::string nuevo_nombre, std::string nueva_descripcion);
-    void mostrarDatos() const;
+private:
+    static int generarId(const std::string& archivo);
+    static bool validarDatos(const std::string& nombre, const std::string& descripcion);
+
+    // Nuevas funciones privadas
+    static int buscarPorCriterio();
+    static void mostrarListaCompleta();
 };
 
 #endif

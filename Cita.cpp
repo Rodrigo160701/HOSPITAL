@@ -159,7 +159,7 @@ void Cita::modificar(int citaId) {
 
     while (std::getline(archivoEntrada, linea)) {
         if (linea.empty() || linea.find("id_cita") == 0) {
-            archivoTemporal << linea << "\n"; // Copia la cabecera
+            archivoTemporal << linea << "\n"; 
             continue;
         }
 
@@ -206,8 +206,7 @@ void Cita::modificar(int citaId) {
     archivoEntrada.close();
     archivoTemporal.close();
 
-    // Verificar si el archivo destino ya existe y eliminarlo
-    if (std::remove("citas.csv") == 0) {
+        if (std::remove("citas.csv") == 0) {
         std::cout << "Archivo original eliminado correctamente." << std::endl;
     }
     else {
@@ -237,7 +236,7 @@ void Cita::cancelar(int citaId) {
 
     while (std::getline(archivoEntrada, linea)) {
         if (linea.empty() || linea.find("id_cita") == 0) {
-            archivoTemporal << linea << "\n"; // Copia la cabecera
+            archivoTemporal << linea << "\n"; 
             continue;
         }
 
@@ -261,7 +260,7 @@ void Cita::cancelar(int citaId) {
     archivoEntrada.close();
     archivoTemporal.close();
 
-    // Verificar si el archivo destino ya existe y eliminarlo
+    
     if (std::remove("citas.csv") == 0) {
         std::cout << "Archivo original eliminado correctamente." << std::endl;
     }

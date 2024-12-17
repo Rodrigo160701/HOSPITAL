@@ -8,7 +8,6 @@ void menuPaciente() {
         std::cout << "1. Registrar Paciente\n";
         std::cout << "2. Buscar Paciente\n";
         std::cout << "0. Volver al Menú Principal\n";
-        std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
         std::cin.ignore();
 
@@ -17,17 +16,16 @@ void menuPaciente() {
             Paciente::registrar();
             break;
         case 2: {
-            int pacienteId = Paciente::buscar();
-            if (pacienteId != -1) {
-                Paciente::menuPacienteSeleccionado(pacienteId);
+            int id = Paciente::buscar();
+            if (id != -1) {
+                Paciente::menuPacienteSeleccionado(id);
             }
             break;
         }
         case 0:
-            std::cout << "Volviendo al Menú Principal..." << std::endl;
             break;
         default:
-            std::cout << "Opción no válida. Intente nuevamente." << std::endl;
+            std::cout << "Opción inválida.\n";
         }
     } while (opcion != 0);
 }
@@ -39,7 +37,6 @@ void menuMedico() {
         std::cout << "1. Registrar Médico\n";
         std::cout << "2. Buscar Médico\n";
         std::cout << "0. Volver al Menú Principal\n";
-        std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
         std::cin.ignore();
 
@@ -48,17 +45,16 @@ void menuMedico() {
             Medico::registrar();
             break;
         case 2: {
-            int medicoId = Medico::buscar();
-            if (medicoId != -1) {
-                Medico::menuMedicoSeleccionado(medicoId);
+            int id = Medico::buscar();
+            if (id != -1) {
+                Medico::menuMedicoSeleccionado(id);
             }
             break;
         }
         case 0:
-            std::cout << "Volviendo al Menú Principal..." << std::endl;
             break;
         default:
-            std::cout << "Opción no válida. Intente nuevamente." << std::endl;
+            std::cout << "Opción inválida.\n";
         }
     } while (opcion != 0);
 }
@@ -70,7 +66,6 @@ void menuCita() {
         std::cout << "1. Asignar Cita\n";
         std::cout << "2. Buscar Cita\n";
         std::cout << "0. Volver al Menú Principal\n";
-        std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
         std::cin.ignore();
 
@@ -79,17 +74,45 @@ void menuCita() {
             Cita::asignar();
             break;
         case 2: {
-            int citaId = Cita::buscar();
-            if (citaId != -1) {
-                Cita::menuCitaSeleccionada(citaId);
+            int id = Cita::buscar();
+            if (id != -1) {
+                Cita::menuCitaSeleccionada(id);
             }
             break;
         }
         case 0:
-            std::cout << "Volviendo al Menú Principal..." << std::endl;
             break;
         default:
-            std::cout << "Opción no válida. Intente nuevamente." << std::endl;
+            std::cout << "Opción inválida.\n";
+        }
+    } while (opcion != 0);
+}
+
+void menuServicio() {
+    int opcion;
+    do {
+        std::cout << "\n--- Menú Servicio ---\n";
+        std::cout << "1. Registrar Servicio\n";
+        std::cout << "2. Buscar Servicio\n";
+        std::cout << "0. Volver al Menú Principal\n";
+        std::cin >> opcion;
+        std::cin.ignore();
+
+        switch (opcion) {
+        case 1:
+            Servicio::registrar();
+            break;
+        case 2: {
+            int id = Servicio::buscar();
+            if (id != -1) {
+                Servicio::menuServicioSeleccionado(id);
+            }
+            break;
+        }
+        case 0:
+            break;
+        default:
+            std::cout << "Opción inválida.\n";
         }
     } while (opcion != 0);
 }
@@ -101,8 +124,8 @@ void menuPrincipal() {
         std::cout << "1. Paciente\n";
         std::cout << "2. Médico\n";
         std::cout << "3. Cita\n";
+        std::cout << "4. Servicio\n";
         std::cout << "0. Salir\n";
-        std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
         std::cin.ignore();
 
@@ -116,11 +139,14 @@ void menuPrincipal() {
         case 3:
             menuCita();
             break;
+        case 4:
+            menuServicio();
+            break;
         case 0:
-            std::cout << "Saliendo del programa..." << std::endl;
+            std::cout << "Saliendo...\n";
             break;
         default:
-            std::cout << "Opción no válida. Intente nuevamente." << std::endl;
+            std::cout << "Opción inválida.\n";
         }
     } while (opcion != 0);
 }
@@ -129,6 +155,7 @@ int main() {
     Paciente::inicializarArchivo();
     Medico::inicializarArchivo();
     Cita::inicializarArchivo();
+    Servicio::inicializarArchivo();
     menuPrincipal();
     return 0;
 }
