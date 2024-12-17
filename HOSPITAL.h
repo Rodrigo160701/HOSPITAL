@@ -5,6 +5,7 @@
 #include "Medico.h"
 #include "Cita.h"
 #include "Servicio.h"
+#include "Reporte.h"
 
 void menuPrincipal();
 void menuPaciente();

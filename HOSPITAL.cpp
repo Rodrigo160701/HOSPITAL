@@ -125,7 +125,9 @@ void menuPrincipal() {
         std::cout << "2. Médico\n";
         std::cout << "3. Cita\n";
         std::cout << "4. Servicio\n";
+        std::cout << "5. Reportes\n";
         std::cout << "0. Salir\n";
+        std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
         std::cin.ignore();
 
@@ -141,6 +143,9 @@ void menuPrincipal() {
             break;
         case 4:
             menuServicio();
+            break;
+        case 5:
+            Reporte::menuReportes();
             break;
         case 0:
             std::cout << "Saliendo...\n";
