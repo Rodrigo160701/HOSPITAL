@@ -12,6 +12,7 @@ void Reporte::menuReportes() {
         std::cout << "\n--- Menú Reportes ---\n";
         std::cout << "1. Reporte por Fechas de Ingreso\n";
         std::cout << "2. Pacientes sin Historial Clínico\n";
+        std::cout << "3. Médicos por Especialidad\n";
         std::cout << "0. Volver al Menú Principal\n";
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
@@ -23,6 +24,9 @@ void Reporte::menuReportes() {
             break;
         case 2:
             reportePacientesSinHistorial();
+            break;
+        case 3:
+            reporteMedicosPorEspecialidad();
             break;
         case 0:
             std::cout << "Volviendo al Menú Principal...\n";
@@ -97,5 +101,38 @@ void Reporte::reportePacientesSinHistorial() {
 
     if (!hayPacientes) {
         std::cout << "Todos los pacientes tienen historial clínico.\n";
+    }
+}
+void Reporte::reporteMedicosPorEspecialidad() {
+    std::ifstream archivo("medicos.csv");
+    if (!archivo) {
+        std::cerr << "Error al abrir el archivo de médicos.\n";
+        return;
+    }
+
+    std::string linea;
+    std::map<std::string, std::vector<std::string>> medicosPorEspecialidad;
+
+    while (std::getline(archivo, linea)) {
+        if (linea.find("id") == 0) continue; // Saltar la cabecera
+
+        std::stringstream ss(linea);
+        std::string id, nombre, especialidad, dni;
+
+        std::getline(ss, id, ',');
+        std::getline(ss, nombre, ',');
+        std::getline(ss, especialidad, ',');
+        std::getline(ss, dni, ',');
+
+        medicosPorEspecialidad[especialidad].push_back("ID: " + id + ", Nombre: " + nombre + ", DNI: " + dni);
+    }
+    archivo.close();
+
+    std::cout << "\n--- Reporte de Médicos por Especialidad ---\n";
+    for (const auto& [especialidad, medicos] : medicosPorEspecialidad) {
+        std::cout << "Especialidad: " << especialidad << "\n";
+        for (const auto& medico : medicos) {
+            std::cout << "  " << medico << "\n";
+        }
     }
 }

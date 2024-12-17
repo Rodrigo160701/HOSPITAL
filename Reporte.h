@@ -6,6 +6,7 @@ public:
     static void menuReportes();
     static void reportePorFechasIngreso();
     static void reportePacientesSinHistorial();
+    static void reporteMedicosPorEspecialidad(); 
 };
 
 #endif
