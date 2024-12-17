@@ -1,6 +1,4 @@
 #include "Reporte.h"
-#include "Medico.h"
-#include "Paciente.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -11,12 +9,40 @@ void Reporte::menuReportes() {
     int opcion;
     do {
         std::cout << "\n--- Menú Reportes ---\n";
-        std::cout << "1. Reporte por Fechas de Ingreso (Pacientes)\n";
-        std::cout << "2. Pacientes sin Historial Clínico\n";
-        std::cout << "3. Médicos por Especialidad\n";
-        std::cout << "4. Médicos con sus Pacientes\n";
-        std::cout << "5. Citas por Fecha\n";
+        std::cout << "1. Reportes de Pacientes\n";
+        std::cout << "2. Reportes de Médicos\n";
+        std::cout << "3. Reporte de Citas por Fecha\n";
         std::cout << "0. Volver al Menú Principal\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> opcion;
+        std::cin.ignore();
+
+        switch (opcion) {
+        case 1:
+            menuReportesPacientes();
+            break;
+        case 2:
+            menuReportesMedicos();
+            break;
+        case 3:
+            reporteCitasPorFecha();
+            break;
+        case 0:
+            std::cout << "Volviendo al Menú Principal...\n";
+            break;
+        default:
+            std::cout << "Opción inválida. Intente nuevamente.\n";
+        }
+    } while (opcion != 0);
+}
+
+void Reporte::menuReportesPacientes() {
+    int opcion;
+    do {
+        std::cout << "\n--- Reportes de Pacientes ---\n";
+        std::cout << "1. Reporte por Fechas de Ingreso\n";
+        std::cout << "2. Pacientes sin Historial Clínico\n";
+        std::cout << "0. Volver al Menú Reportes\n";
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
         std::cin.ignore();
@@ -28,17 +54,35 @@ void Reporte::menuReportes() {
         case 2:
             reportePacientesSinHistorial();
             break;
-        case 3:
+        case 0:
+            std::cout << "Volviendo al Menú Reportes...\n";
+            break;
+        default:
+            std::cout << "Opción inválida. Intente nuevamente.\n";
+        }
+    } while (opcion != 0);
+}
+
+void Reporte::menuReportesMedicos() {
+    int opcion;
+    do {
+        std::cout << "\n--- Reportes de Médicos ---\n";
+        std::cout << "1. Médicos por Especialidad\n";
+        std::cout << "2. Médicos con sus Pacientes\n";
+        std::cout << "0. Volver al Menú Reportes\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> opcion;
+        std::cin.ignore();
+
+        switch (opcion) {
+        case 1:
             reporteMedicosPorEspecialidad();
             break;
-        case 4:
+        case 2:
             reporteMedicosConPacientes();
             break;
-        case 5:
-            reporteCitasPorFecha();
-            break;
         case 0:
-            std::cout << "Volviendo al Menú Principal...\n";
+            std::cout << "Volviendo al Menú Reportes...\n";
             break;
         default:
             std::cout << "Opción inválida. Intente nuevamente.\n";
