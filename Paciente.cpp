@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <regex>
+#include <vector>
 
 void Paciente::inicializarArchivo() {
     std::ofstream archivo("pacientes.csv", std::ios::app);
@@ -39,7 +40,7 @@ void Paciente::registrar() {
     }
 
     int id = generarId("pacientes.csv");
-    archivo << id << "," << nombre << "," << dni << "," << fechaIngreso << ",\n"; 
+    archivo << id << "," << nombre << "," << dni << "," << fechaIngreso << ",\n";
     archivo.close();
 
     std::cout << "Paciente registrado correctamente con ID " << id << "." << std::endl;
@@ -264,6 +265,14 @@ void Paciente::agregarHistorialClinico(int pacienteId) {
     std::string linea;
     bool encontrado = false;
 
+    std::vector<std::string> especialidades = {
+        "Cardiología", "Neurología", "Transplante", "Dermatología", "Pediatría",
+        "Oncología", "Traumatología", "Ginecología", "Urología", "Reumatología",
+        "Nefrología", "Hematología", "Otorrinolaringología", "Anestesiología",
+        "Gastroenterología", "Medicina General", "Ortopedia", "Psicología",
+        "Endocrinología", "Oftalmología"
+    };
+
     while (std::getline(archivoEntrada, linea)) {
         if (linea.empty() || linea.find("id") == 0) {
             archivoTemporal << linea << "\n"; // Copia la cabecera
@@ -282,10 +291,31 @@ void Paciente::agregarHistorialClinico(int pacienteId) {
             encontrado = true;
             std::cout << "Paciente encontrado: " << linea << std::endl;
 
+            std::string tipoEnfermedad;
+            int opcion;
+            do {
+                std::cout << "\nSeleccione el tipo de enfermedad (especialidad):\n";
+                for (size_t i = 0; i < especialidades.size(); ++i) {
+                    std::cout << i + 1 << ". " << especialidades[i] << "\n";
+                }
+                std::cout << "Ingrese el número correspondiente: ";
+                std::cin >> opcion;
+                std::cin.ignore();
+
+                if (opcion < 1 || opcion > static_cast<int>(especialidades.size())) {
+                    std::cerr << "Opción inválida. Intente nuevamente.\n";
+                }
+                else {
+                    tipoEnfermedad = especialidades[opcion - 1];
+                }
+            } while (opcion < 1 || opcion > static_cast<int>(especialidades.size()));
+
             std::cout << "Ingrese el historial clínico a agregar: ";
             std::string nuevoHistorial;
+            std::cin.ignore();
             std::getline(std::cin, nuevoHistorial);
-            historial += " | " + nuevoHistorial;
+
+            historial += " | [" + tipoEnfermedad + "] " + nuevoHistorial;
 
             archivoTemporal << idStr << "," << nombre << "," << dni << "," << fechaIngreso << "," << historial << "\n";
             std::cout << "Historial clínico agregado correctamente." << std::endl;
@@ -302,7 +332,6 @@ void Paciente::agregarHistorialClinico(int pacienteId) {
     archivoEntrada.close();
     archivoTemporal.close();
 
-    // Verificar si el archivo destino ya existe y eliminarlo
     if (std::remove("pacientes.csv") == 0) {
         std::cout << "Archivo original eliminado correctamente." << std::endl;
     }
