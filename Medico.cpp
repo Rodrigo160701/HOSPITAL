@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <vector>
 
 void Medico::inicializarArchivo() {
     std::ofstream archivo("medicos.csv", std::ios::app);
@@ -18,13 +19,37 @@ void Medico::registrar() {
         return;
     }
 
-    std::string nombre, especialidad, dni;
+    std::string nombre, dni, especialidad;
+    std::vector<std::string> especialidades = {
+        "Cardiología", "Neurología", "Transplante", "Dermatología", "Pediatría",
+        "Oncología", "Traumatología", "Ginecología", "Urología", "Reumatología",
+        "Nefrología", "Hematología", "Otorrinolaringología", "Anestesiología",
+        "Gastroenterología", "Medicina General", "Ortopedia", "Psicología",
+        "Endocrinología", "Oftalmología"
+    };
+
     std::cout << "Ingrese el nombre del médico: ";
     std::getline(std::cin, nombre);
-    std::cout << "Ingrese la especialidad del médico: ";
-    std::getline(std::cin, especialidad);
     std::cout << "Ingrese el DNI del médico: ";
     std::getline(std::cin, dni);
+
+    int opcion;
+    do {
+        std::cout << "\nSeleccione la especialidad:\n";
+        for (size_t i = 0; i < especialidades.size(); ++i) {
+            std::cout << i + 1 << ". " << especialidades[i] << "\n";
+        }
+        std::cout << "Ingrese el número correspondiente: ";
+        std::cin >> opcion;
+        std::cin.ignore();
+
+        if (opcion < 1 || opcion > static_cast<int>(especialidades.size())) {
+            std::cerr << "Opción inválida. Intente nuevamente.\n";
+        }
+        else {
+            especialidad = especialidades[opcion - 1];
+        }
+    } while (opcion < 1 || opcion > static_cast<int>(especialidades.size()));
 
     if (!validarDatos(nombre, especialidad, dni)) {
         std::cerr << "Datos inválidos. Intente nuevamente." << std::endl;
@@ -63,7 +88,7 @@ int Medico::buscar() {
             std::stringstream ss(linea);
             std::string idStr;
             std::getline(ss, idStr, ',');
-            medicoId = std::stoi(idStr); // Conversión segura porque ya validamos
+            medicoId = std::stoi(idStr);
             encontrado = true;
             break;
         }
@@ -139,10 +164,32 @@ void Medico::modificar(int medicoId) {
             std::getline(std::cin, nuevoNombre);
             if (!nuevoNombre.empty()) nombre = nuevoNombre;
 
-            std::cout << "Ingrese la nueva especialidad del médico (deje vacío para no modificar): ";
-            std::string nuevaEspecialidad;
-            std::getline(std::cin, nuevaEspecialidad);
-            if (!nuevaEspecialidad.empty()) especialidad = nuevaEspecialidad;
+            int opcion;
+            std::vector<std::string> especialidades = {
+                "Cardiología", "Neurología", "Transplante", "Dermatología", "Pediatría",
+                "Oncología", "Traumatología", "Ginecología", "Urología", "Reumatología",
+                "Nefrología", "Hematología", "Otorrinolaringología", "Anestesiología",
+                "Gastroenterología", "Medicina General", "Ortopedia", "Psicología",
+                "Endocrinología", "Oftalmología"
+            };
+
+            do {
+                std::cout << "\nSeleccione la nueva especialidad (deje vacío para no modificar):\n";
+                for (size_t i = 0; i < especialidades.size(); ++i) {
+                    std::cout << i + 1 << ". " << especialidades[i] << "\n";
+                }
+                std::cout << "Ingrese el número correspondiente o presione Enter para no modificar: ";
+                std::string input;
+                std::getline(std::cin, input);
+                if (input.empty()) break;
+                opcion = std::stoi(input);
+                if (opcion >= 1 && opcion <= static_cast<int>(especialidades.size())) {
+                    especialidad = especialidades[opcion - 1];
+                }
+                else {
+                    std::cerr << "Opción inválida.\n";
+                }
+            } while (opcion < 1 || opcion > static_cast<int>(especialidades.size()));
 
             std::cout << "Ingrese el nuevo DNI del médico (deje vacío para no modificar): ";
             std::string nuevoDni;
@@ -218,7 +265,7 @@ int Medico::generarId(const std::string& archivo) {
     int ultimoId = 0;
 
     while (std::getline(entrada, linea)) {
-        if (linea.empty() || linea.find("id") == 0) continue; // Ignora líneas vacías o la cabecera
+        if (linea.empty() || linea.find("id") == 0) continue;
 
         std::stringstream ss(linea);
         std::string id;
