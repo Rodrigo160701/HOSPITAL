@@ -6,6 +6,7 @@
 #include "Cita.h"
 #include "Servicio.h"
 #include "Reporte.h"
+#include "Backup.h"
 
 void menuPrincipal();
 void menuPaciente();

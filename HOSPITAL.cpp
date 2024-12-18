@@ -1,5 +1,22 @@
 ﻿#include "HOSPITAL.h"
+#include "Backup.h"
 #include <iostream>
+#include <locale>
+
+int main() {
+    // Configuración para UTF-8
+    std::locale::global(std::locale("")); 
+    std::wcin.imbue(std::locale());       
+    std::wcout.imbue(std::locale());      
+    std::ios::sync_with_stdio(false);     
+
+    Paciente::inicializarArchivo();
+    Medico::inicializarArchivo();
+    Cita::inicializarArchivo();
+    Servicio::inicializarArchivo();
+    menuPrincipal();
+    return 0;
+}
 
 void menuPaciente() {
     int opcion;
@@ -126,6 +143,7 @@ void menuPrincipal() {
         std::cout << "3. Cita\n";
         std::cout << "4. Servicio\n";
         std::cout << "5. Reportes\n";
+        std::cout << "6. Backup\n"; 
         std::cout << "0. Salir\n";
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
@@ -147,20 +165,14 @@ void menuPrincipal() {
         case 5:
             Reporte::menuReportes();
             break;
+        case 6:
+            Backup::menuBackup(); 
+            break;
         case 0:
             std::cout << "Saliendo...\n";
             break;
         default:
-            std::cout << "Opción inválida.\n";
+            std::cout << "Opción inválida. Intente nuevamente.\n";
         }
     } while (opcion != 0);
-}
-
-int main() {
-    Paciente::inicializarArchivo();
-    Medico::inicializarArchivo();
-    Cita::inicializarArchivo();
-    Servicio::inicializarArchivo();
-    menuPrincipal();
-    return 0;
 }
