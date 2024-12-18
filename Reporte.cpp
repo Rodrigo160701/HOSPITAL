@@ -11,7 +11,7 @@ void Reporte::menuReportes() {
         std::cout << "\n--- Menú Reportes ---\n";
         std::cout << "1. Reportes de Pacientes\n";
         std::cout << "2. Reportes de Médicos\n";
-        std::cout << "3. Reporte de Citas por Fecha\n";
+        std::cout << "3. Reporte de Citas\n";
         std::cout << "0. Volver al Menú Principal\n";
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
@@ -25,7 +25,7 @@ void Reporte::menuReportes() {
             menuReportesMedicos();
             break;
         case 3:
-            reporteCitasPorFecha();
+            menuReportesCitas();
             break;
         case 0:
             std::cout << "Volviendo al Menú Principal...\n";
@@ -80,6 +80,31 @@ void Reporte::menuReportesMedicos() {
             break;
         case 2:
             reporteMedicosConPacientes();
+            break;
+        case 0:
+            std::cout << "Volviendo al Menú Reportes...\n";
+            break;
+        default:
+            std::cout << "Opción inválida. Intente nuevamente.\n";
+        }
+    } while (opcion != 0);
+}
+void Reporte::menuReportesCitas() {
+    int opcion;
+    do {
+        std::cout << "\n--- Reportes de Citas ---\n";
+        std::cout << "1. Citas por Fecha\n";
+        std::cout << "2. Citas por Prioridad\n";
+        std::cout << "0. Volver al Menú Reportes\n";
+        std::cout << "Seleccione una opción: ";
+        std::cin >> opcion;
+        std::cin.ignore();
+        switch (opcion) {
+        case 1:
+            reporteCitasPorFecha();
+            break;
+        case 2:
+            reporteCitasPorPrioridad();
             break;
         case 0:
             std::cout << "Volviendo al Menú Reportes...\n";
@@ -275,6 +300,44 @@ void Reporte::reporteCitasPorFecha() {
         std::cout << "Fecha: " << fecha << "\n";
         for (const auto& cita : citas) {
             std::cout << "  " << cita << "\n";
+        }
+    }
+}
+void Reporte::reporteCitasPorPrioridad() {
+    std::ifstream archivo("citas.csv");
+    if (!archivo) {
+        std::cerr << "Error al abrir el archivo de citas.\n";
+        return;
+    }
+
+    std::string linea;
+    std::map<int, std::vector<std::string>> citasPorPrioridad;
+
+    while (std::getline(archivo, linea)) {
+        if (linea.find("id_cita") == 0) continue;
+        std::stringstream ss(linea);
+        std::string idCita, pacienteId, medicoId, fecha, urgencia;
+        std::getline(ss, idCita, ',');
+        std::getline(ss, pacienteId, ',');
+        std::getline(ss, medicoId, ',');
+        std::getline(ss, fecha, ',');
+        std::getline(ss, urgencia, ',');
+
+        int prioridad = std::stoi(urgencia);
+        std::string cita = "ID Cita: " + idCita + ", Fecha: " + fecha + ", Paciente ID: " + pacienteId + ", Médico ID: " + medicoId;
+        citasPorPrioridad[prioridad].push_back(cita);
+    }
+    archivo.close();
+    std::cout << "\n--- Reporte de Citas por Prioridad ---\n";
+    for (int prioridad = 1; prioridad <= 5; ++prioridad) {
+        std::cout << "Prioridad " << prioridad << ":\n";
+        if (citasPorPrioridad[prioridad].empty()) {
+            std::cout << "  No hay citas con esta prioridad.\n";
+        }
+        else {
+            for (const auto& cita : citasPorPrioridad[prioridad]) {
+                std::cout << "  " << cita << "\n";
+            }
         }
     }
 }
