@@ -4,6 +4,7 @@
 #include <sstream>
 #include <map>
 #include <vector>
+#include <regex>
 
 void Reporte::menuReportes() {
     int opcion;
@@ -42,6 +43,7 @@ void Reporte::menuReportesPacientes() {
         std::cout << "\n--- Reportes de Pacientes ---\n";
         std::cout << "1. Reporte por Fechas de Ingreso\n";
         std::cout << "2. Pacientes sin Historial Clínico\n";
+        std::cout << "3. Pacientes con Enfermedad Crónica\n";
         std::cout << "0. Volver al Menú Reportes\n";
         std::cout << "Seleccione una opción: ";
         std::cin >> opcion;
@@ -53,6 +55,9 @@ void Reporte::menuReportesPacientes() {
             break;
         case 2:
             reportePacientesSinHistorial();
+            break;
+        case 3:
+            pacientesConEnfermedadCronica();
             break;
         case 0:
             std::cout << "Volviendo al Menú Reportes...\n";
@@ -89,6 +94,7 @@ void Reporte::menuReportesMedicos() {
         }
     } while (opcion != 0);
 }
+
 void Reporte::menuReportesCitas() {
     int opcion;
     do {
@@ -181,6 +187,72 @@ void Reporte::reportePacientesSinHistorial() {
         std::cout << "Todos los pacientes tienen historial clínico.\n";
     }
     archivo.close();
+}
+
+void Reporte::pacientesConEnfermedadCronica() {
+    std::ifstream archivo("pacientes.csv");
+    if (!archivo) {
+        std::cerr << "Error al abrir el archivo de pacientes." << std::endl;
+        return;
+    }
+
+    std::map<std::string, int> contadorEnfermedades;
+    std::map<int, std::vector<std::string>> pacientesEnfermedades;
+    std::string linea;
+
+    // Leer los datos del archivo
+    while (std::getline(archivo, linea)) {
+        if (linea.empty() || linea.find("id") == 0) {
+            continue; // Ignorar cabecera o líneas vacías
+        }
+
+        std::stringstream ss(linea);
+        std::string idStr, nombre, dni, fechaIngreso, historial;
+        std::getline(ss, idStr, ',');
+        std::getline(ss, nombre, ',');
+        std::getline(ss, dni, ',');
+        std::getline(ss, fechaIngreso, ',');
+        std::getline(ss, historial);
+
+        // Extraer las enfermedades del historial clínico
+        std::regex regexEnfermedad(R"(\[(.*?)\])");
+        std::smatch match;
+        std::string::const_iterator searchStart(historial.cbegin());
+        while (std::regex_search(searchStart, historial.cend(), match, regexEnfermedad)) {
+            std::string enfermedad = match[1].str();
+            contadorEnfermedades[enfermedad]++;
+            pacientesEnfermedades[std::stoi(idStr)].push_back(enfermedad);
+            searchStart = match.suffix().first;
+        }
+    }
+
+    archivo.close();
+
+    // Mostrar pacientes con enfermedades crónicas
+    std::cout << "\n--- Reporte: Pacientes con Enfermedad Crónica ---\n";
+    for (const auto& paciente : pacientesEnfermedades) {
+        int idPaciente = paciente.first;
+        std::vector<std::string> enfermedades = paciente.second;
+        std::map<std::string, int> frecuenciaPaciente;
+
+        // Contar la frecuencia de cada enfermedad para este paciente
+        for (const std::string& enfermedad : enfermedades) {
+            frecuenciaPaciente[enfermedad]++;
+        }
+
+        // Verificar si alguna enfermedad aparece 3 veces o más
+        bool tieneEnfermedadCronica = false;
+        for (const auto& frecuencia : frecuenciaPaciente) {
+            if (frecuencia.second >= 3) {
+                tieneEnfermedadCronica = true;
+                break;
+            }
+        }
+
+        if (tieneEnfermedadCronica) {
+            std::cout << "Paciente ID: " << idPaciente << " tiene enfermedades crónicas.\n";
+        }
+    }
 }
 
 void Reporte::reporteMedicosPorEspecialidad() {
@@ -303,6 +375,7 @@ void Reporte::reporteCitasPorFecha() {
         }
     }
 }
+
 void Reporte::reporteCitasPorPrioridad() {
     std::ifstream archivo("citas.csv");
     if (!archivo) {

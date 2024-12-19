@@ -9,10 +9,12 @@ public:
     static void menuReportesCitas();
     static void reportePorFechasIngreso();
     static void reportePacientesSinHistorial();
+    static void pacientesConEnfermedadCronica();
     static void reporteMedicosPorEspecialidad();
     static void reporteMedicosConPacientes();
     static void reporteCitasPorFecha();
     static void reporteCitasPorPrioridad();
+
 };
 
-#endif
+#endif // REPORTE_H
