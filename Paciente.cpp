@@ -13,6 +13,23 @@ void Paciente::inicializarArchivo() {
     archivo.close();
 }
 
+bool Paciente::validarDNI(const std::string& dni) {
+    if (dni.size() != 9) {
+        return false;
+    }
+
+    std::regex formatoDNI("^\\d{8}[A-Z]$");
+    if (!std::regex_match(dni, formatoDNI)) {
+        return false;
+    }
+
+    const std::string letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+    int numeros = std::stoi(dni.substr(0, 8));
+    char letraCorrecta = letras[numeros % 23];
+
+    return dni[8] == letraCorrecta;
+}
+
 void Paciente::registrar() {
     std::ofstream archivo("pacientes.csv", std::ios::app);
     if (!archivo) {
@@ -23,8 +40,14 @@ void Paciente::registrar() {
     std::string nombre, dni, fechaIngreso;
     std::cout << "Ingrese el nombre del paciente: ";
     std::getline(std::cin, nombre);
-    std::cout << "Ingrese el DNI del paciente: ";
-    std::getline(std::cin, dni);
+
+    do {
+        std::cout << "Ingrese el DNI del paciente (8 dígitos + letra): ";
+        std::getline(std::cin, dni);
+        if (!validarDNI(dni)) {
+            std::cerr << "DNI inválido. Debe ser de 8 números seguidos de una letra válida." << std::endl;
+        }
+    } while (!validarDNI(dni));
 
     do {
         std::cout << "Ingrese la fecha de ingreso del paciente (YYYY-MM-DD): ";
@@ -63,7 +86,7 @@ int Paciente::buscar() {
 
     while (std::getline(archivo, linea)) {
         if (linea.empty() || linea.find("id") == 0) {
-            continue; // Ignora líneas vacías o la cabecera
+            continue; 
         }
 
         if (linea.find(criterio) != std::string::npos) {
@@ -71,7 +94,7 @@ int Paciente::buscar() {
             std::stringstream ss(linea);
             std::string idStr;
             std::getline(ss, idStr, ',');
-            pacienteId = std::stoi(idStr); // Conversión segura porque ya validamos
+            pacienteId = std::stoi(idStr); 
             encontrado = true;
             break;
         }
@@ -134,7 +157,7 @@ void Paciente::modificar(int pacienteId) {
 
     while (std::getline(archivoEntrada, linea)) {
         if (linea.empty() || linea.find("id") == 0) {
-            archivoTemporal << linea << "\n"; // Copia la cabecera
+            archivoTemporal << linea << "\n"; 
             continue;
         }
 
@@ -158,13 +181,14 @@ void Paciente::modificar(int pacienteId) {
             std::cout << "Ingrese el nuevo DNI del paciente (deje vacío para no modificar): ";
             std::string nuevoDni;
             std::getline(std::cin, nuevoDni);
-            if (!nuevoDni.empty()) dni = nuevoDni;
+            if (!nuevoDni.empty() && validarDNI(nuevoDni)) dni = nuevoDni;
+            else if (!nuevoDni.empty()) std::cerr << "DNI inválido. No se modificó." << std::endl;
 
             std::cout << "Ingrese la nueva fecha de ingreso del paciente (deje vacío para no modificar): ";
             std::string nuevaFechaIngreso;
             std::getline(std::cin, nuevaFechaIngreso);
             if (!nuevaFechaIngreso.empty() && validarFecha(nuevaFechaIngreso)) fechaIngreso = nuevaFechaIngreso;
-            else if (!nuevaFechaIngreso.empty()) std::cerr << "Fecha inválida. No se modificó la fecha." << std::endl;
+            else if (!nuevaFechaIngreso.empty()) std::cerr << "Fecha inválida. No se modificó." << std::endl;
 
             archivoTemporal << idStr << "," << nombre << "," << dni << "," << fechaIngreso << "," << historial << "\n";
             std::cout << "Paciente modificado correctamente." << std::endl;
@@ -181,7 +205,6 @@ void Paciente::modificar(int pacienteId) {
     archivoEntrada.close();
     archivoTemporal.close();
 
-    // Verificar si el archivo destino ya existe y eliminarlo
     if (std::remove("pacientes.csv") == 0) {
         std::cout << "Archivo original eliminado correctamente." << std::endl;
     }
@@ -212,7 +235,7 @@ void Paciente::eliminar(int pacienteId) {
 
     while (std::getline(archivoEntrada, linea)) {
         if (linea.empty() || linea.find("id") == 0) {
-            archivoTemporal << linea << "\n"; // Copia la cabecera
+            archivoTemporal << linea << "\n"; 
             continue;
         }
 
@@ -236,7 +259,6 @@ void Paciente::eliminar(int pacienteId) {
     archivoEntrada.close();
     archivoTemporal.close();
 
-    // Verificar si el archivo destino ya existe y eliminarlo
     if (std::remove("pacientes.csv") == 0) {
         std::cout << "Archivo original eliminado correctamente." << std::endl;
     }
@@ -350,7 +372,7 @@ int Paciente::generarId(const std::string& archivo) {
     int ultimoId = 0;
 
     while (std::getline(entrada, linea)) {
-        if (linea.empty() || linea.find("id") == 0) continue; // Ignora líneas vacías o la cabecera
+        if (linea.empty() || linea.find("id") == 0) continue; 
 
         std::stringstream ss(linea);
         std::string id;
@@ -364,7 +386,7 @@ int Paciente::generarId(const std::string& archivo) {
 }
 
 bool Paciente::validarDatos(const std::string& nombre, const std::string& dni, const std::string& fechaIngreso) {
-    return !nombre.empty() && dni.size() == 9 && validarFecha(fechaIngreso);
+    return !nombre.empty() && validarDNI(dni) && validarFecha(fechaIngreso);
 }
 
 bool Paciente::validarFecha(const std::string& fecha) {
@@ -385,7 +407,6 @@ bool Paciente::validarFecha(const std::string& fecha) {
 
     int diasPorMes[] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-    // Comprobar años bisiestos
     if (mes == 2 && ((anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0))) {
         diasPorMes[1] = 29;
     }

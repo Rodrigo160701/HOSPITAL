@@ -15,8 +15,9 @@ public:
 
 private:
     static int generarId(const std::string& archivo);
+    static bool validarDNI(const std::string& dni);
     static bool validarDatos(const std::string& nombre, const std::string& dni, const std::string& fechaIngreso);
-    static bool validarFecha(const std::string& fecha); // Añadido aquí
+    static bool validarFecha(const std::string& fecha); 
 };
 
-#endif
+#endif 
