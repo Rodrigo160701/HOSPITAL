@@ -2,13 +2,14 @@
 #include "Backup.h"
 #include <iostream>
 #include <locale>
+#include <regex>
 
 int main() {
     // Configuración para UTF-8
-    std::locale::global(std::locale("")); 
-    std::wcin.imbue(std::locale());       
-    std::wcout.imbue(std::locale());      
-    std::ios::sync_with_stdio(false);     
+    std::locale::global(std::locale(""));
+    std::wcin.imbue(std::locale());
+    std::wcout.imbue(std::locale());
+    std::ios::sync_with_stdio(false);
 
     Paciente::inicializarArchivo();
     Medico::inicializarArchivo();
@@ -19,14 +20,23 @@ int main() {
 }
 
 void menuPaciente() {
-    int opcion;
+    std::string entrada;
+    int opcion = -1; // Inicializamos 'opcion'
     do {
         std::cout << "\n--- Menú Paciente ---\n";
         std::cout << "1. Registrar Paciente\n";
         std::cout << "2. Buscar Paciente\n";
         std::cout << "0. Volver al Menú Principal\n";
-        std::cin >> opcion;
-        std::cin.ignore();
+        std::cout << "Seleccione una opción: ";
+        std::getline(std::cin, entrada);
+
+        if (std::regex_match(entrada, std::regex("\\d+"))) {
+            opcion = std::stoi(entrada);
+        }
+        else {
+            std::cout << "Por favor, seleccione una opción válida (solo números).\n";
+            continue;
+        }
 
         switch (opcion) {
         case 1:
@@ -48,14 +58,23 @@ void menuPaciente() {
 }
 
 void menuMedico() {
-    int opcion;
+    std::string entrada;
+    int opcion = -1; // Inicializamos 'opcion'
     do {
         std::cout << "\n--- Menú Médico ---\n";
         std::cout << "1. Registrar Médico\n";
         std::cout << "2. Buscar Médico\n";
         std::cout << "0. Volver al Menú Principal\n";
-        std::cin >> opcion;
-        std::cin.ignore();
+        std::cout << "Seleccione una opción: ";
+        std::getline(std::cin, entrada);
+
+        if (std::regex_match(entrada, std::regex("\\d+"))) {
+            opcion = std::stoi(entrada);
+        }
+        else {
+            std::cout << "Por favor, seleccione una opción válida (solo números).\n";
+            continue;
+        }
 
         switch (opcion) {
         case 1:
@@ -77,14 +96,23 @@ void menuMedico() {
 }
 
 void menuCita() {
-    int opcion;
+    std::string entrada;
+    int opcion = -1; // Inicializamos 'opcion'
     do {
         std::cout << "\n--- Menú Cita ---\n";
         std::cout << "1. Asignar Cita\n";
         std::cout << "2. Buscar Cita\n";
         std::cout << "0. Volver al Menú Principal\n";
-        std::cin >> opcion;
-        std::cin.ignore();
+        std::cout << "Seleccione una opción: ";
+        std::getline(std::cin, entrada);
+
+        if (std::regex_match(entrada, std::regex("\\d+"))) {
+            opcion = std::stoi(entrada);
+        }
+        else {
+            std::cout << "Por favor, seleccione una opción válida (solo números).\n";
+            continue;
+        }
 
         switch (opcion) {
         case 1:
@@ -106,14 +134,23 @@ void menuCita() {
 }
 
 void menuServicio() {
-    int opcion;
+    std::string entrada;
+    int opcion = -1; // Inicializamos 'opcion'
     do {
         std::cout << "\n--- Menú Servicio ---\n";
         std::cout << "1. Registrar Servicio\n";
         std::cout << "2. Buscar Servicio\n";
         std::cout << "0. Volver al Menú Principal\n";
-        std::cin >> opcion;
-        std::cin.ignore();
+        std::cout << "Seleccione una opción: ";
+        std::getline(std::cin, entrada);
+
+        if (std::regex_match(entrada, std::regex("\\d+"))) {
+            opcion = std::stoi(entrada);
+        }
+        else {
+            std::cout << "Por favor, seleccione una opción válida (solo números).\n";
+            continue;
+        }
 
         switch (opcion) {
         case 1:
@@ -135,7 +172,8 @@ void menuServicio() {
 }
 
 void menuPrincipal() {
-    int opcion;
+    std::string entrada;
+    int opcion = -1; // Inicializamos 'opcion'
     do {
         std::cout << "\n--- Menú Principal ---\n";
         std::cout << "1. Paciente\n";
@@ -143,11 +181,18 @@ void menuPrincipal() {
         std::cout << "3. Cita\n";
         std::cout << "4. Servicio\n";
         std::cout << "5. Reportes\n";
-        std::cout << "6. Backup\n"; 
+        std::cout << "6. Backup\n";
         std::cout << "0. Salir\n";
         std::cout << "Seleccione una opción: ";
-        std::cin >> opcion;
-        std::cin.ignore();
+        std::getline(std::cin, entrada);
+
+        if (std::regex_match(entrada, std::regex("\\d+"))) {
+            opcion = std::stoi(entrada);
+        }
+        else {
+            std::cout << "Por favor, seleccione una opción válida (solo números).\n";
+            continue;
+        }
 
         switch (opcion) {
         case 1:
@@ -166,7 +211,7 @@ void menuPrincipal() {
             Reporte::menuReportes();
             break;
         case 6:
-            Backup::menuBackup(); 
+            Backup::menuBackup();
             break;
         case 0:
             std::cout << "Saliendo...\n";
