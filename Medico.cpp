@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <regex>
 
 void Medico::inicializarArchivo() {
     std::ofstream archivo("medicos.csv", std::ios::app);
@@ -10,6 +11,22 @@ void Medico::inicializarArchivo() {
         archivo << "id,nombre,especialidad,dni\n"; // Cabecera del archivo
     }
     archivo.close();
+}
+bool Medico::validarDNI(const std::string& dni) {
+    if (dni.size() != 9) {
+        return false;
+    }
+
+    std::regex formatoDNI("^\\d{8}[A-Z]$");
+    if (!std::regex_match(dni, formatoDNI)) {
+        return false;
+    }
+
+    const std::string letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+    int numeros = std::stoi(dni.substr(0, 8));
+    char letraCorrecta = letras[numeros % 23];
+
+    return dni[8] == letraCorrecta;
 }
 
 void Medico::registrar() {
@@ -30,8 +47,13 @@ void Medico::registrar() {
 
     std::cout << "Ingrese el nombre del médico: ";
     std::getline(std::cin, nombre);
-    std::cout << "Ingrese el DNI del médico: ";
-    std::getline(std::cin, dni);
+    do {
+        std::cout << "Ingrese el DNI del médico (8 dígitos + letra): ";
+        std::getline(std::cin, dni);
+        if (!validarDNI(dni)) {
+            std::cerr << "DNI inválido. Debe ser de 8 números seguidos de una letra válida." << std::endl;
+        }
+    } while (!validarDNI(dni));
 
     int opcion;
     do {
@@ -194,7 +216,8 @@ void Medico::modificar(int medicoId) {
             std::cout << "Ingrese el nuevo DNI del médico (deje vacío para no modificar): ";
             std::string nuevoDni;
             std::getline(std::cin, nuevoDni);
-            if (!nuevoDni.empty()) dni = nuevoDni;
+            if (!nuevoDni.empty() && validarDNI(nuevoDni)) dni = nuevoDni;
+            else if (!nuevoDni.empty()) std::cerr << "DNI inválido. No se modificó." << std::endl;
 
             archivoTemporal << idStr << "," << nombre << "," << especialidad << "," << dni << "\n";
             std::cout << "Médico modificado correctamente." << std::endl;
@@ -210,8 +233,17 @@ void Medico::modificar(int medicoId) {
 
     archivoEntrada.close();
     archivoTemporal.close();
-    std::remove("medicos.csv");
-    std::rename("medicos_temp.csv", "medicos.csv");
+
+    if (std::remove("medicos.csv") == 0) {
+        std::cout << "Archivo original eliminado correctamente." << std::endl;
+    }
+    else {
+        std::cerr << "Advertencia: No se pudo eliminar el archivo original (puede que no exista)." << std::endl;
+    }
+
+    if (std::rename("medicos_temp.csv", "medicos.csv") != 0) {
+        perror("Error al renombrar el archivo temporal");
+    }
 }
 
 void Medico::eliminar(int medicoId) {
@@ -255,8 +287,17 @@ void Medico::eliminar(int medicoId) {
 
     archivoEntrada.close();
     archivoTemporal.close();
-    std::remove("medicos.csv");
-    std::rename("medicos_temp.csv", "medicos.csv");
+
+    if (std::remove("medicos.csv") == 0) {
+        std::cout << "Archivo original eliminado correctamente." << std::endl;
+    }
+    else {
+        std::cerr << "Advertencia: No se pudo eliminar el archivo original (puede que no exista)." << std::endl;
+    }
+
+    if (std::rename("medicos_temp.csv", "medicos.csv") != 0) {
+        perror("Error al renombrar el archivo temporal");
+    }
 }
 
 int Medico::generarId(const std::string& archivo) {

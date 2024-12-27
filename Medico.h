@@ -15,6 +15,7 @@ public:
 private:
     static int generarId(const std::string& archivo);
     static bool validarDatos(const std::string& nombre, const std::string& especialidad, const std::string& dni);
+    static bool validarDNI(const std::string& dni);
 };
 
 #endif
